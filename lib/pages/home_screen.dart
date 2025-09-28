@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:funday_test/providers/taipei_audio_list_provider.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           return ListView.builder(
             itemCount: mediaList.length,
             itemBuilder: (context, index) {
-              return ListTile(title: Text(mediaList[index].title));
+              return ListTile(
+                title: Text(mediaList[index].title),
+                trailing: Column(
+                  children: [
+                    TextButton(onPressed: () {}, child: Icon(Icons.play_arrow)),
+                    Text(
+                      DateFormat(
+                        'MM/dd HH:mm',
+                      ).format(DateTime.parse(mediaList[index].modified)),
+                    ),
+                  ],
+                ),
+              );
             },
           );
         },
