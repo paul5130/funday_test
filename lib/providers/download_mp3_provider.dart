@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,12 +17,12 @@ Future<String?> downloadMp3(Ref ref, String url, String id) async {
     await dio.download(
       url,
       filePath,
-      onReceiveProgress: (received, total) {
-        if (total != -1) {
-          debugPrint((received / total * 100).toString());
-        }
-      },
+      options: Options(headers: {'Accept': 'audio/mpeg'}),
     );
+    final file = File(filePath);
+    debugPrint('Downloaded size: ${await file.length()} bytes');
+    final firstBytes = await file.openRead(0, 10).first;
+    debugPrint('First bytes: $firstBytes');
     return filePath;
   } catch (e) {
     debugPrint(e.toString());

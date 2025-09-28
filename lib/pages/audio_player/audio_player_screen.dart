@@ -21,7 +21,11 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
   void initState() {
     super.initState();
     player = AudioPlayer();
-    player.setAsset(widget.assetPath);
+    if (widget.assetPath.startsWith('/')) {
+      player.setFilePath(widget.assetPath);
+    } else {
+      player.setAsset(widget.assetPath);
+    }
   }
 
   @override
