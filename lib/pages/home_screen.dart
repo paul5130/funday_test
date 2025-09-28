@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:funday_test/pages/audio_player/audio_player_screen.dart';
 import 'package:funday_test/providers/taipei_audio_list_provider.dart';
 import 'package:intl/intl.dart';
 
@@ -22,10 +23,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemCount: mediaList.length,
             itemBuilder: (context, index) {
               return ListTile(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AudioPlayerScreen(
+                      title: mediaList[index].title,
+                      assetPath: mediaList[index].url,
+                    ),
+                  ),
+                ),
                 title: Text(mediaList[index].title),
                 trailing: Column(
                   children: [
-                    TextButton(onPressed: () {}, child: Icon(Icons.play_arrow)),
+                    // TextButton(onPressed: () {}, child: Icon(Icons.play_arrow)),
                     Text(
                       DateFormat(
                         'MM/dd HH:mm',
