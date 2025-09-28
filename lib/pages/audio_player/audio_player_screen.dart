@@ -21,7 +21,7 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
   void initState() {
     super.initState();
     player = AudioPlayer();
-    player.setAsset('assets/audio/simon.mp3');
+    player.setAsset(widget.assetPath);
   }
 
   @override
