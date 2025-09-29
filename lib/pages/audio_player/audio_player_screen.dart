@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioPlayerScreen extends ConsumerStatefulWidget {
+class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({
     super.key,
     required this.title,
@@ -11,12 +10,12 @@ class AudioPlayerScreen extends ConsumerStatefulWidget {
   final String title;
   final String assetPath;
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _AudioPlayerScreenState();
+  State<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
 }
 
-class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
+class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   late AudioPlayer player;
+  bool isPlaying = false;
   @override
   void initState() {
     super.initState();
@@ -44,12 +43,20 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
           children: [
             Text(widget.title, style: TextStyle(fontSize: 40)),
             GestureDetector(
-              onTap: () => player.play(),
-              child: Icon(Icons.play_arrow, size: 50),
-            ),
-            GestureDetector(
-              onTap: () => player.pause(),
-              child: Icon(Icons.pause, size: 50),
+              onTap: () {
+                if (isPlaying) {
+                  player.pause();
+                  setState(() {
+                    isPlaying = false;
+                  });
+                } else {
+                  player.play();
+                  setState(() {
+                    isPlaying = true;
+                  });
+                }
+              },
+              child: Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 50),
             ),
           ],
         ),
