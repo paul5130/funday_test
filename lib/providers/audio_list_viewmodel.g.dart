@@ -21,7 +21,7 @@ final class AudioListViewmodelProvider
         argument: null,
         retry: null,
         name: r'audioListViewmodelProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -35,7 +35,7 @@ final class AudioListViewmodelProvider
 }
 
 String _$audioListViewmodelHash() =>
-    r'a14de52328d4cb80636ee352d8e385aab57544bc';
+    r'b987f8604378964cb5842ef40f0959570b5d0d4d';
 
 abstract class _$AudioListViewmodel
     extends $AsyncNotifier<List<AudioItemViewmodel>> {

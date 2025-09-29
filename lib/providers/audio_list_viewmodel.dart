@@ -8,15 +8,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'audio_list_viewmodel.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AudioListViewmodel extends _$AudioListViewmodel {
+  int _currentPage = 1;
+  bool isLoading = false;
+  bool hasMore = true;
   @override
   Future<List<AudioItemViewmodel>> build() async {
-    final audios = await ref.watch(taipeiAudioListProvider.future);
+    return await _fetchPage(_currentPage);
+  }
 
+  Future<List<AudioItemViewmodel>> _fetchPage(int page) async {
+    final notifier = ref.read(taipeiAudioListProvider.notifier);
+    final audios = await notifier.fetchPage(page);
     return Future.wait(
       audios.map((audio) async {
-        final filePath = await ref.watch(
+        final filePath = await ref.read(
           isDownloadedProvider(audio.id.toString()).future,
         );
         return AudioItemViewmodel(
@@ -29,8 +36,23 @@ class AudioListViewmodel extends _$AudioListViewmodel {
     );
   }
 
+  Future<void> fetchMore() async {
+    if (isLoading || !hasMore) return;
+    isLoading = true;
+    final previousItems = state.value ?? [];
+    try {
+      _currentPage++;
+      final newItems = await _fetchPage(_currentPage);
+      state = AsyncData(previousItems + newItems);
+      hasMore = newItems.isNotEmpty;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    } finally {
+      isLoading = false;
+    }
+  }
+
   Future<void> downloadAudio(TaipeiAudio taipeiAudio) async {
-    // 1. Update the item's downloadStatus to downloading (progress 0.0)
     state = AsyncData([
       for (final item in state.value ?? [])
         if (item.taipeiAudio.id == taipeiAudio.id)
@@ -39,11 +61,10 @@ class AudioListViewmodel extends _$AudioListViewmodel {
           item,
     ]);
     try {
-      // 2. Call downloadMp3Provider to download
       final filePath = await ref.read(
         downloadMp3Provider(taipeiAudio.url, taipeiAudio.id.toString()).future,
       );
-      // 3. On success, update the item's status to downloaded with filePath
+      if (!ref.mounted) return;
       state = AsyncData([
         for (final item in state.value ?? [])
           if (item.taipeiAudio.id == taipeiAudio.id)
@@ -54,7 +75,7 @@ class AudioListViewmodel extends _$AudioListViewmodel {
             item,
       ]);
     } catch (e) {
-      // 4. On error, reset the item's status to not downloaded
+      if (!ref.mounted) return;
       state = AsyncData([
         for (final item in state.value ?? [])
           if (item.taipeiAudio.id == taipeiAudio.id)

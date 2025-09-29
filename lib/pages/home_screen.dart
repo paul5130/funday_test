@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:funday_test/models/taipei_audio.dart';
 import 'package:funday_test/pages/audio_player/audio_player_screen.dart';
 import 'package:funday_test/providers/audio_list_viewmodel.dart';
-import 'package:funday_test/providers/taipei_audio_list_provider.dart';
 import 'package:funday_test/widgets/audio_list_cell.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -28,10 +27,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 100) {
-      final notifier = ref.read(taipeiAudioListProvider.notifier);
-      notifier.fetchMore();
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+    if (current > maxExtent - 100) {
+      final notifier = ref.read(audioListViewmodelProvider.notifier);
+      if (!notifier.isLoading && notifier.hasMore) {
+        notifier.fetchMore();
+      }
     }
   }
 
@@ -44,7 +46,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         data: (audioViewModelList) {
           return ListView.builder(
             controller: _scrollController,
-            itemCount: audioViewModelList.length + 1,
+            itemCount:
+                audioViewModelList.length +
+                (ref.read(audioListViewmodelProvider.notifier).hasMore ? 1 : 0),
             itemBuilder: (context, index) {
               if (index == audioViewModelList.length) {
                 final isLoading = audioViewModelListSync.isLoading;
