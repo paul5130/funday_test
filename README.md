@@ -1,16 +1,19 @@
-# funday_test
+# Funday Test App
 
-A new Flutter project.
+## 專案介紹
+- 播放與下載音檔
+- 分頁載入（上滑加載更多）
+- 使用 Riverpod + MVVM 架構管理狀態
 
-## Getting Started
+## 第三方套件
+- **Flutter** 3.35.4 / **Dart** 3.9.2
+- **Riverpod** (狀態管理)
+- **Dio** (API 請求)
+- **Freezed** (資料模型 / 狀態)
+- **just_audio**  (音檔播放)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 功能說明
+- **音檔列表**：從台北旅遊 API 讀取音檔
+- **上滑加載更多**：滾動到底部會自動載入下一頁
+- **下載功能**：下載 mp3 至本機資料夾
+- **播放功能**：已下載的顯示播放按鈕，未下載的顯示下載按鈕
