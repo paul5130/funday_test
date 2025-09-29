@@ -21,10 +21,9 @@ class AudioListViewmodel extends _$AudioListViewmodel {
         );
         return AudioItemViewmodel(
           taipeiAudio: audio,
-          downloadStatus: DownloadStatus(
-            isDownloaded: filePath != null,
-            filePath: filePath,
-          ),
+          downloadStatus: filePath != null
+              ? DownloadStatus.downloaded(filePath: filePath)
+              : DownloadStatus.notDownloaded(),
         );
       }),
     );
@@ -35,9 +34,7 @@ class AudioListViewmodel extends _$AudioListViewmodel {
     state = AsyncData([
       for (final item in state.value ?? [])
         if (item.taipeiAudio.id == taipeiAudio.id)
-          item.copyWith(
-            // downloadStatus: DownloadStatus.downloading(progress: 0.0),
-          )
+          item.copyWith(downloadStatus: DownloadStatus.downloading())
         else
           item,
     ]);
@@ -51,10 +48,7 @@ class AudioListViewmodel extends _$AudioListViewmodel {
         for (final item in state.value ?? [])
           if (item.taipeiAudio.id == taipeiAudio.id)
             item.copyWith(
-              downloadStatus: DownloadStatus(
-                isDownloaded: true,
-                filePath: filePath,
-              ),
+              downloadStatus: DownloadStatus.downloaded(filePath: filePath!),
             )
           else
             item,
@@ -65,10 +59,7 @@ class AudioListViewmodel extends _$AudioListViewmodel {
         for (final item in state.value ?? [])
           if (item.taipeiAudio.id == taipeiAudio.id)
             item.copyWith(
-              downloadStatus: DownloadStatus(
-                isDownloaded: false,
-                filePath: null,
-              ),
+              DownloadStatus.error(message: 'Failed to download audio'),
             )
           else
             item,

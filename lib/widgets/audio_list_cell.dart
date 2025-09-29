@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:funday_test/models/audio_item_viewmodel.dart';
+import 'package:funday_test/models/download_status.dart';
 import 'package:intl/intl.dart';
 
 class AudioListCell extends StatefulWidget {
@@ -10,7 +11,7 @@ class AudioListCell extends StatefulWidget {
     this.onDownload,
   });
   final AudioItemViewmodel audioItemViewmodel;
-  final VoidCallback? onPlay;
+  final Function(String?)? onPlay;
   final VoidCallback? onDownload;
   @override
   State<AudioListCell> createState() => _AudioListCellState();
@@ -34,30 +35,29 @@ class _AudioListCellState extends State<AudioListCell> {
           ),
           Column(
             children: [
-              GestureDetector(
-                onTap: widget.audioItemViewmodel.downloadStatus.isDownloaded
-                    ? widget.onPlay
-                    : widget.onDownload,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1),
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                  ),
+              widget.audioItemViewmodel.downloadStatus.when(
+                notDownloaded: () => GestureDetector(
+                  onTap: widget.onDownload,
                   child: Row(
                     children: [
-                      Icon(
-                        widget.audioItemViewmodel.downloadStatus.isDownloaded
-                            ? Icons.play_arrow
-                            : Icons.download,
-                      ),
-                      Text(
-                        widget.audioItemViewmodel.downloadStatus.isDownloaded
-                            ? '播放'
-                            : '下載',
-                      ),
+                      Icon(Icons.download),
+                      Text('下載', style: TextStyle(fontSize: 16)),
                     ],
                   ),
+                ),
+                downloading: () => Row(
+                  children: [
+                    CircularProgressIndicator.adaptive(strokeWidth: 2),
+                    Text('下載中', style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+                downloaded: (filePath) => GestureDetector(
+                  onTap: () => widget.onPlay!(filePath),
+                  child: Row(children: [Icon(Icons.play_arrow), Text('播放')]),
+                ),
+                error: (message) => GestureDetector(
+                  onTap: widget.onDownload,
+                  child: Row(children: [Icon(Icons.download)]),
                 ),
               ),
               Text(

@@ -59,10 +59,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               }
               return AudioListCell(
                 audioItemViewmodel: audioViewModelList[index],
-                onPlay: () => _toAudioPlayerScreen(
+                onPlay: (filePath) => _toAudioPlayerScreen(
                   context,
                   audioViewModelList[index].taipeiAudio,
-                  audioViewModelList[index].downloadStatus.filePath,
+                  filePath,
                 ),
                 onDownload: () => ref
                     .read(audioListViewmodelProvider.notifier)

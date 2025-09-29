@@ -35,7 +35,7 @@ final class AudioListViewmodelProvider
 }
 
 String _$audioListViewmodelHash() =>
-    r'e8342a415e2c571a662c3d731f2763228fca8c68';
+    r'a14de52328d4cb80636ee352d8e385aab57544bc';
 
 abstract class _$AudioListViewmodel
     extends $AsyncNotifier<List<AudioItemViewmodel>> {
