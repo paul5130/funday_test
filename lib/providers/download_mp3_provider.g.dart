@@ -58,7 +58,7 @@ final class DownloadMp3Provider
   }
 }
 
-String _$downloadMp3Hash() => r'74e6492618eff92cdb765d18dc08366925f3bd17';
+String _$downloadMp3Hash() => r'142f09ea37d76df831624623b5c481bdd1b595f6';
 
 final class DownloadMp3Family extends $Family
     with $FunctionalFamilyOverride<FutureOr<String?>, (String, String)> {

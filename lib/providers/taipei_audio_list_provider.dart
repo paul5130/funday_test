@@ -5,21 +5,45 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'taipei_audio_list_provider.g.dart';
 
 @riverpod
-Future<List<TaipeiAudio>> fetchTaipeiAudioList(Ref ref) async {
-  final dio = Dio();
-  final response = await dio.get(
-    'https://www.travel.taipei/open-api/zh-tw/Media/Audio',
-    queryParameters: {'page': 1},
-    options: Options(headers: {'Accept': 'application/json'}),
-  );
+class TaipeiAudioList extends _$TaipeiAudioList {
+  final _dio = Dio();
+  int _currentPage = 1;
 
-  if (response.statusCode == 200) {
-    final data = response.data;
-    final List<dynamic> results = data['data'];
-    return results
-        .map((json) => TaipeiAudio.fromJson(json as Map<String, dynamic>))
-        .toList();
-  } else {
-    throw Exception('Failed to load Taipei audio list');
+  @override
+  Future<List<TaipeiAudio>> build() async {
+    _currentPage = 1;
+    return _fetchPage(1);
+  }
+
+  Future<List<TaipeiAudio>> _fetchPage(int page) async {
+    final response = await _dio.get(
+      'https://www.travel.taipei/open-api/zh-tw/Media/Audio',
+      queryParameters: {'page': page},
+      options: Options(headers: {'Accept': 'application/json'}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data;
+      final List<dynamic> results = data['data'];
+      await Future.delayed(const Duration(milliseconds: 500));
+      return results
+          .map((json) => TaipeiAudio.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } else {
+      throw Exception('Failed to load Taipei audio list');
+    }
+  }
+
+  Future<void> fetchMore() async {
+    state = AsyncLoading<List<TaipeiAudio>>().copyWithPrevious(state);
+    final nextPage = _currentPage + 1;
+    final previous = await future;
+    try {
+      final newItems = await _fetchPage(nextPage);
+      _currentPage = nextPage;
+      state = AsyncData([...previous, ...newItems]);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 }

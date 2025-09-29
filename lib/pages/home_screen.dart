@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:funday_test/pages/audio_player/audio_player_screen.dart';
@@ -13,16 +14,49 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final _scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      final notifier = ref.read(taipeiAudioListProvider.notifier);
+      notifier.fetchMore();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final audioListSync = ref.watch(fetchTaipeiAudioListProvider);
+    final audioListSync = ref.watch(taipeiAudioListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('FUNDAY')),
       body: audioListSync.when(
         data: (mediaList) {
           return ListView.builder(
-            itemCount: mediaList.length,
+            controller: _scrollController,
+            itemCount: mediaList.length + 1,
             itemBuilder: (context, index) {
+              if (index == mediaList.length) {
+                final isLoading = audioListSync.isLoading;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                  child: Center(
+                    child: isLoading
+                        ? const CircularProgressIndicator.adaptive()
+                        : const SizedBox.shrink(),
+                  ),
+                );
+              }
               return ListTile(
                 onTap: () async {
                   final localPath = await ref.read(
@@ -31,19 +65,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mediaList[index].id.toString(),
                     ).future,
                   );
-                  if (!mounted) return;
                   if (localPath != null) {
-                    Navigator.push(
+                    _toAudioPlayerScreen(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => AudioPlayerScreen(
-                          title: mediaList[index].title,
-                          assetPath: localPath,
-                        ),
-                      ),
+                      mediaList[index].title,
+                      localPath,
                     );
                   }
-
                   // final downloadState = ref.watch(
                   //   downloadMp3Provider(
                   //     mediaList[index].url,
@@ -86,6 +114,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
         error: (error, stackTrace) => Center(child: Text(error.toString())),
         loading: () => const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  void _toAudioPlayerScreen(
+    BuildContext context,
+    String title,
+    String localPath,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            AudioPlayerScreen(title: title, assetPath: localPath),
       ),
     );
   }
