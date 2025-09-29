@@ -33,7 +33,7 @@ final class TaipeiAudioListProvider
   TaipeiAudioList create() => TaipeiAudioList();
 }
 
-String _$taipeiAudioListHash() => r'8b29c3a95bad7ffe16afabb20d4a5e30a898f5a6';
+String _$taipeiAudioListHash() => r'57f66696ff29eb555111afa1b4030c233e9bfb0d';
 
 abstract class _$TaipeiAudioList extends $AsyncNotifier<List<TaipeiAudio>> {
   FutureOr<List<TaipeiAudio>> build();

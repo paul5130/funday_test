@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:funday_test/models/taipei_audio.dart';
 import 'package:funday_test/pages/audio_player/audio_player_screen.dart';
-import 'package:funday_test/providers/download_mp3_provider.dart';
+import 'package:funday_test/providers/audio_list_viewmodel.dart';
 import 'package:funday_test/providers/taipei_audio_list_provider.dart';
-import 'package:intl/intl.dart';
+import 'package:funday_test/widgets/audio_list_cell.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -37,17 +37,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final audioListSync = ref.watch(taipeiAudioListProvider);
+    final audioViewModelListSync = ref.watch(audioListViewmodelProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('FUNDAY')),
-      body: audioListSync.when(
-        data: (mediaList) {
+      body: audioViewModelListSync.when(
+        data: (audioViewModelList) {
           return ListView.builder(
             controller: _scrollController,
-            itemCount: mediaList.length + 1,
+            itemCount: audioViewModelList.length + 1,
             itemBuilder: (context, index) {
-              if (index == mediaList.length) {
-                final isLoading = audioListSync.isLoading;
+              if (index == audioViewModelList.length) {
+                final isLoading = audioViewModelListSync.isLoading;
                 return Padding(
                   padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
                   child: Center(
@@ -57,57 +57,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 );
               }
-              return ListTile(
-                onTap: () async {
-                  final localPath = await ref.read(
-                    downloadMp3Provider(
-                      mediaList[index].url,
-                      mediaList[index].id.toString(),
-                    ).future,
-                  );
-                  if (localPath != null) {
-                    _toAudioPlayerScreen(
-                      context,
-                      mediaList[index].title,
-                      localPath,
-                    );
-                  }
-                  // final downloadState = ref.watch(
-                  //   downloadMp3Provider(
-                  //     mediaList[index].url,
-                  //     mediaList[index].id.toString(),
-                  //   ),
-                  // );
-                  // downloadState.when(
-                  //   data: (path) {
-                  //     debugPrint(path);
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => AudioPlayerScreen(
-                  //           title: mediaList[index].title,
-                  //           assetPath: path,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  //   error: (error, stackTrace) =>
-                  //       Center(child: Text(error.toString())),
-                  //   loading: () =>
-                  //       const Center(child: CircularProgressIndicator()),
-                  // );
-                },
-                title: Text(mediaList[index].title),
-                trailing: Column(
-                  children: [
-                    // TextButton(onPressed: () {}, child: Icon(Icons.play_arrow)),
-                    Text(
-                      DateFormat(
-                        'MM/dd HH:mm',
-                      ).format(DateTime.parse(mediaList[index].modified)),
-                    ),
-                  ],
+              return AudioListCell(
+                audioItemViewmodel: audioViewModelList[index],
+                onPlay: () => _toAudioPlayerScreen(
+                  context,
+                  audioViewModelList[index].taipeiAudio,
+                  audioViewModelList[index].downloadStatus.filePath,
                 ),
+                onDownload: () => ref
+                    .read(audioListViewmodelProvider.notifier)
+                    .downloadAudio(audioViewModelList[index].taipeiAudio),
               );
             },
           );
@@ -120,14 +79,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _toAudioPlayerScreen(
     BuildContext context,
-    String title,
-    String localPath,
+    TaipeiAudio taipeiAudio,
+    String? localPath,
   ) {
+    if (localPath == null) {
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
-            AudioPlayerScreen(title: title, assetPath: localPath),
+            AudioPlayerScreen(title: taipeiAudio.title, assetPath: localPath),
       ),
     );
   }

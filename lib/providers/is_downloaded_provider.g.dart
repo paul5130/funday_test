@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'download_mp3_provider.dart';
+part of 'is_downloaded_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,31 +9,31 @@ part of 'download_mp3_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(downloadMp3)
-const downloadMp3Provider = DownloadMp3Family._();
+@ProviderFor(isDownloaded)
+const isDownloadedProvider = IsDownloadedFamily._();
 
-final class DownloadMp3Provider
+final class IsDownloadedProvider
     extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
     with $FutureModifier<String?>, $FutureProvider<String?> {
-  const DownloadMp3Provider._({
-    required DownloadMp3Family super.from,
-    required (String, String) super.argument,
+  const IsDownloadedProvider._({
+    required IsDownloadedFamily super.from,
+    required String super.argument,
   }) : super(
          retry: null,
-         name: r'downloadMp3Provider',
+         name: r'isDownloadedProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$downloadMp3Hash();
+  String debugGetCreateSourceHash() => _$isDownloadedHash();
 
   @override
   String toString() {
-    return r'downloadMp3Provider'
+    return r'isDownloadedProvider'
         ''
-        '$argument';
+        '($argument)';
   }
 
   @$internal
@@ -43,13 +43,13 @@ final class DownloadMp3Provider
 
   @override
   FutureOr<String?> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return downloadMp3(ref, argument.$1, argument.$2);
+    final argument = this.argument as String;
+    return isDownloaded(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is DownloadMp3Provider && other.argument == argument;
+    return other is IsDownloadedProvider && other.argument == argument;
   }
 
   @override
@@ -58,22 +58,22 @@ final class DownloadMp3Provider
   }
 }
 
-String _$downloadMp3Hash() => r'4698b7d92257f138faa8f0239f778aecfdd667b2';
+String _$isDownloadedHash() => r'c48b67db384343fbeb4281d0f4e2e0b0ca96205a';
 
-final class DownloadMp3Family extends $Family
-    with $FunctionalFamilyOverride<FutureOr<String?>, (String, String)> {
-  const DownloadMp3Family._()
+final class IsDownloadedFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String?>, String> {
+  const IsDownloadedFamily._()
     : super(
         retry: null,
-        name: r'downloadMp3Provider',
+        name: r'isDownloadedProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  DownloadMp3Provider call(String url, String id) =>
-      DownloadMp3Provider._(argument: (url, id), from: this);
+  IsDownloadedProvider call(String id) =>
+      IsDownloadedProvider._(argument: id, from: this);
 
   @override
-  String toString() => r'downloadMp3Provider';
+  String toString() => r'isDownloadedProvider';
 }

@@ -8,7 +8,9 @@ part 'taipei_audio_list_provider.g.dart';
 class TaipeiAudioList extends _$TaipeiAudioList {
   final _dio = Dio();
   int _currentPage = 1;
-
+  static const _baseUrl =
+      'https://www.travel.taipei/open-api/zh-tw/Media/Audio';
+  static const _defaultHeaders = {'Accept': 'application/json'};
   @override
   Future<List<TaipeiAudio>> build() async {
     _currentPage = 1;
@@ -17,9 +19,9 @@ class TaipeiAudioList extends _$TaipeiAudioList {
 
   Future<List<TaipeiAudio>> _fetchPage(int page) async {
     final response = await _dio.get(
-      'https://www.travel.taipei/open-api/zh-tw/Media/Audio',
+      _baseUrl,
       queryParameters: {'page': page},
-      options: Options(headers: {'Accept': 'application/json'}),
+      options: Options(headers: _defaultHeaders),
     );
 
     if (response.statusCode == 200) {
